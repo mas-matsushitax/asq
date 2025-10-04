@@ -29,8 +29,15 @@ def show_models_and_exit(ctx, param, value):
 )
 @click.option(
     '-m', '--model',
-    default='gpt-4o-mini',
-    help='使用するLLMのモデル名を指定します (例: gpt-4o, claude-3-opus)。 デフォルト: gpt-4o-mini'
+    # デフォルトのモデルを 'gemini/gemini-2.5-pro' に変更
+    default='gemini/gemini-2.5-pro',
+    # 環境変数 ASQ_MODEL を使ってモデルを指定できるようにする
+    # 優先順位は click によって以下のように処理される:
+    # 1. --model オプション
+    # 2. ASQ_MODEL 環境変数
+    # 3. default 値
+    envvar='ASQ_MODEL',
+    help='使用するLLMのモデル名を指定します。ASQ_MODEL環境変数でも設定可能です。デフォルト: gemini/gemini-2.5-pro'
 )
 @click.option(
     '-s', '--system',

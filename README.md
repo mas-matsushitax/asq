@@ -11,7 +11,7 @@
 
   - Python 3.10以上
   - uv pythonパッケージマネージャー
-  - 利用するLLMサービスのAPIキーが、環境変数（GEMINI_API_KEY, OPENAI_API_KEYなど）に設定されていること
+  - 利用するLLMサービスのAPIキーが、環境変数（GOOGLE_API_KEY, OPENAI_API_KEYなど）に設定されていること
 
 ### リモートインストール
 
