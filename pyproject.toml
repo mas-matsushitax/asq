@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "asq-tool"
+version = "0.1.0"
+description = "A command-line tool to send stdin to LLM APIs and print the response to stdout."
+requires-python = ">=3.10"
+dependencies = [
+    "click",
+    "litellm",
+    "halo"
+]
+
+[project.scripts]
+asq = "asq.cli:main"
