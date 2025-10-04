@@ -7,7 +7,26 @@ from halo import Halo
 # LiteLLMのデバッグ情報を非表示にする
 litellm.suppress_debug_info = True
 
+# --list オプションが指定されたときに呼び出されるコールバック関数
+def show_models_and_exit(ctx, param, value):
+    # -l または --list が指定されていない場合は何もしない
+    if not value or ctx.resilient_parsing:
+        return
+    # litellm.model_list をアルファベット順にソートして標準出力に表示する
+    for model in sorted(litellm.model_list):
+        click.echo(model)
+    # プログラムを終了する
+    ctx.exit()
+
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))
+@click.option(
+    '-l', '--list',
+    is_flag=True,
+    callback=show_models_and_exit,
+    expose_value=False,
+    is_eager=True, # 他のオプションより先に評価する
+    help='litellmが扱えるモデル名の一覧を表示します。'
+)
 @click.option(
     '-m', '--model',
     default='gpt-4o-mini',
