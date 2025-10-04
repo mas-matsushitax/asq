@@ -82,8 +82,8 @@ def main(model, system, temperature, json_mode):
         spinner.succeed('応答を取得しました')
 
         # 仕様6: LLMからの最終応答テキストを標準出力 (stdout) へ直接出力する。
-        content = response.choices[0].message.content
-        sys.stdout.write(content)
+        content = response.choices[0].message.content # type: ignore
+        sys.stdout.write(content) # type: ignore
 
     except Exception as e:
         spinner.fail(f"エラーが発生しました")
