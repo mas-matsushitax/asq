@@ -16,14 +16,12 @@
 ### リモートインストール
 
 ```bash
-# GitHubリポジトリURLは仮のものを使用しています
 uv tool install git+https://github.com/mas-matsushitax/asq.git
 ```
 
 ### ローカルインストール
 
 ```bash
-# GitHubリポジトリURLは仮のものを使用しています
 curl -L https://github.com/mas-matsushitax/asq/archive/refs/heads/main.zip --output asq-main.zip
 unzip asq-main.zip
 uv tool install ./asq-main
