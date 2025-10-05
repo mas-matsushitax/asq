@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import os
 import click
 import litellm
 from halo import Halo
@@ -56,12 +57,57 @@ def show_models_and_exit(ctx, param, value):
     default=False,
     help='モデルに応答をJSON形式で強制させます。'
 )
-def main(model, system, temperature, json_mode):
+@click.option(
+    '-p', '--promp', 'promp_mode',
+    is_flag=True,
+    default=False,
+    help='プロンプ連携モード'
+)
+def main(model, system, temperature, json_mode, promp_mode):
     """
     標準入力からプロンプトを受け取り、LLM APIに送信し、その応答を標準出力へ出力します。
     """
-    # 仕様1: 標準入力 (stdin) から全てのデータを読み込み、これをユーザープロンプトとして設定する。
-    user_prompt = sys.stdin.read()
+    # promp連携モード用の変数を初期化
+    user_prompt = ""
+    in_file_path = "" # 出力ファイルパス
+
+    if promp_mode:
+        # プロンプ連携モードが有効な場合の処理
+        promp_out_dir = ".promp-out"
+        promp_in_dir = ".promp-in"
+
+        try:
+            # .promp-out フォルダの存在を確認
+            if not os.path.isdir(promp_out_dir):
+                raise FileNotFoundError(f"入力フォルダ '{promp_out_dir}' が見つかりません。")
+
+            # .promp-out フォルダから 'out-*.txt' 形式のファイルを探す
+            out_files = [f for f in os.listdir(promp_out_dir) if f.startswith('out-') and f.endswith('.txt')]
+            if not out_files:
+                raise FileNotFoundError(f"'{promp_out_dir}' 内に 'out-*.txt' 形式のファイルが見つかりません。")
+
+            # ファイル名でソートして最新のファイルを取得
+            latest_out_file = max(out_files)
+            latest_out_file_path = os.path.join(promp_out_dir, latest_out_file)
+
+            # 最新ファイルの内容をプロンプトとして読み込む
+            with open(latest_out_file_path, 'r', encoding='utf-8') as f:
+                user_prompt = f.read()
+
+            # 入力ファイルのタイムスタンプから出力ファイル名を生成
+            timestamp = latest_out_file.replace('out-', '').replace('.txt', '')
+            in_file_name = f"in-{timestamp}.txt"
+            in_file_path = os.path.join(promp_in_dir, in_file_name)
+
+            # .promp-in フォルダが存在しない場合は作成
+            os.makedirs(promp_in_dir, exist_ok=True)
+        except Exception as e:
+            # promp連携モードでのエラー処理
+            sys.stderr.write(f"エラー: {e}\n")
+            sys.exit(1)
+    else:
+        # 通常モードの場合、標準入力からプロンプトを読み込む
+        user_prompt = sys.stdin.read()
 
     # LLMに渡すメッセージを構築
     messages = []
@@ -88,9 +134,16 @@ def main(model, system, temperature, json_mode):
         response = litellm.completion(**params)
         spinner.succeed('応答を取得しました')
 
-        # 仕様6: LLMからの最終応答テキストを標準出力 (stdout) へ直接出力する。
+        # LLMからの最終応答テキストを取得
         content = response.choices[0].message.content # type: ignore
-        sys.stdout.write(content) # type: ignore
+
+        if promp_mode:
+            # プロンプ連携モードの場合、結果をファイルに書き込む
+            with open(in_file_path, 'w', encoding='utf-8') as f:
+                f.write(content) # type: ignore
+        else:
+            # 通常モードの場合、結果を標準出力に出力する
+            sys.stdout.write(content) # type: ignore
 
     except Exception as e:
         spinner.fail(f"エラーが発生しました")

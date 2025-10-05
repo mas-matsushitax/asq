@@ -10,7 +10,7 @@
 ### 前提条件
 
   - Python 3.10以上
-  - uv pythonパッケージマネージャー
+  - uv Pythonパッケージマネージャー
   - 利用するLLMサービスのAPIキーが、環境変数（GOOGLE_API_KEY, OPENAI_API_KEYなど）に設定されていること
 
 ### リモートインストール
