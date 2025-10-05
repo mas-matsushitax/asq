@@ -66,13 +66,17 @@ pip uninstall asq
   * なし
 * **オプション (Options):**
 
-  * `-m, --model <モデル名>`: (任意) 使用するLLMのモデル名を指定（**デフォルト: gpt-4o-mini**）。LiteLLMがサポートする形式（例: `gpt-4o`, `claude-3-opus`, `gemini/gemini-2.5-pro` など）。
+  * `-l, --list`: (任意) litellmが扱えるモデル名の一覧を表示します。
+
+  * `-m, --model <モデル名>`: (任意) 使用するLLMのモデル名を指定します。`ASQ_MODEL`環境変数でも設定可能です。（**デフォルト: gemini/gemini-2.5-pro**）。LiteLLMがサポートする形式（例: `gpt-4o`, `claude-3-opus`, `gemini/gemini-2.5-pro` など）。
 
   * `-s, --system <システムプロンプト>`: (任意) LLMに渡す**システムプロンプト**を指定。
 
-  * `-t, --temperature <値>`: (任意) サンプリング温度を指定（デフォルト: `0.7`）。`0.0`～`2.0`の範囲。
+  * `-t, --temperature <値>`: (任意) サンプリング温度を指定します（デフォルト: `0.7`）。`0.0`～`2.0`の範囲。
 
-  * `-j, --json`: (任意) モデルに応答を **JSON形式**で強制させる（応答形式の指定）。
+  * `-j, --json`: (任意) モデルに応答を **JSON形式**で強制させます（応答形式の指定）。
+
+  * `-p, --promp`: (任意) プロンプ連携モードで動作します。
 
 * **実行例:**
   ```sh
@@ -81,6 +85,9 @@ pip uninstall asq
 
   # ファイルの内容をプロンプトとして使用し、gpt-4o-miniでJSON応答を取得
   cat requirements.txt | asq -m gpt-4o-mini -j --system "requirements.txtの内容を読み、必要なライブラリとその用途をJSON形式でリストアップしてください。"
+  
+  # 対応モデル一覧を表示
+  asq --list
   ```
 
 * **仕様:**
